@@ -16,14 +16,18 @@ class WSR_woo_checkout_fields{
 	var $settings;
 
 /************************************************************************
-	Simply Edit these variables.  Empty label string removes field */	
+	Simply Edit these variables.  Empty key string removes field */	
+
 	//textbox
+	var $textboxKey = 'Message on card';
 	var $textboxLabel = 'Please add a message for the card';
 	
 	//Checkbox
+	var $checkboxKey = '';
 	var $checkboxLabel = '';
 
 	//Select
+	var $selectKey = 'For Funeral?';
 	var $selectLabel = 'Is this order for a funeral?';
 	var $selectOptions = array(
 			'no' => 'No',
@@ -45,10 +49,12 @@ class WSR_woo_checkout_fields{
 		add_action('woocommerce_checkout_process', array($this, 'wsr_custom_checkout_field_process'));
 		//update order meta
 		add_action('woocommerce_checkout_update_order_meta', array($this, 'wsr_custom_checkout_field_update_order_meta'));
+		//add fields to email
+		add_filter('woocommerce_email_order_meta_keys', array($this, 'wsr_custom_order_meta_keys'));
 	}
 
 	function wsr_custom_checkout_fields( $fields ) {
-		if ($this->textboxLabel){
+		if ($this->textboxKey){
 			woocommerce_form_field( 'wsr_order_textbox', array(
 				'type'			=> 'text',
 				'label'     	=> $this->textboxLabel,
@@ -57,7 +63,7 @@ class WSR_woo_checkout_fields{
 			), $fields->get_value( 'wsr_order_textbox' ));
 		}	
 
-		if ($this->checkboxLabel){
+		if ($this->checkboxKey){
 			woocommerce_form_field( 'wsr_order_checkbox', array(
 				'type'			=> 'checkbox',
 				'label'     	=> $this->checkboxLabel,
@@ -66,7 +72,7 @@ class WSR_woo_checkout_fields{
 			), $fields->get_value( 'wsr_order_checkbox' ));
 		}	
 
-		if ($this->selectLabel){
+		if ($this->selectKey){
 			woocommerce_form_field( 'wsr_order_select', array(
 				'type' 			=> 'select',
 			 	'label'      	=> $this->selectLabel,
@@ -80,34 +86,50 @@ class WSR_woo_checkout_fields{
 
 	function wsr_custom_checkout_field_process() {
 	    
-	    if ($this->textboxLabel){
+	    if ($this->textboxKey){
 		    if (!$_POST['wsr_order_textbox'])
 		        wc_add_notice( __( 'Please enter required fields' ), 'error' );
 		}
 
-	    if ($this->checkboxLabel){
+	    if ($this->checkboxKey){
 		    if (!$_POST['wsr_order_checkbox'])
 		        wc_add_notice( __( 'Please check required fields' ), 'error' );
 		}
 
-		if ($this->selectLabel){
+		if ($this->selectKey){
 		    if (!$_POST['wsr_order_select'])
 		        wc_add_notice( __( 'Please select required fields' ), 'error' );
 		}
 	}
 
 	function wsr_custom_checkout_field_update_order_meta( $order_id ) {
-		if ($this->textboxLabel){
-    		if ($_POST['wsr_order_textbox']) update_post_meta( $order_id, $this->textboxLabel, esc_attr($_POST['wsr_order_textbox']));
+		if ($this->textboxKey){
+    		if ($_POST['wsr_order_textbox']) update_post_meta( $order_id, $this->textboxKey, esc_attr($_POST['wsr_order_textbox']));
     	}
 
-		if ($this->checkboxLabel){
-    		if ($_POST['wsr_order_checkbox']) update_post_meta( $order_id, $this->checkboxLabel, esc_attr($_POST['wsr_order_checkbox']));
+		if ($this->checkboxKey){
+    		if ($_POST['wsr_order_checkbox']) update_post_meta( $order_id, $this->checkboxKey, esc_attr($_POST['wsr_order_checkbox']));
     	}
 
-    	if ($this->selectLabel){
-    		if ($_POST['wsr_order_select']) update_post_meta( $order_id, $this->selectLabel, esc_attr($_POST['wsr_order_select']));
+    	if ($this->selectKey){
+    		if ($_POST['wsr_order_select']) update_post_meta( $order_id, $this->selectKey, esc_attr($_POST['wsr_order_select']));
     	}
+	}
+
+	function wsr_custom_order_meta_keys( $keys ) {
+	     if ($this->textboxKey){
+	     	$keys[] = $this->textboxKey;
+	     }
+
+	     if ($this->checkboxKey){
+	     	$keys[] = $this->checkboxKey;
+	     }
+
+	     if ($this->selectKey){
+	     	$keys[] = $this->selectKey;
+	     }
+
+	     return $keys;
 	}	
 
 }

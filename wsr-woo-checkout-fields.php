@@ -1,13 +1,10 @@
 <?php
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
-/**
- * @package ws-woo-checkout-fields
- * @version 1.6
- */
+
 /*
 Plugin Name: WSR Woo Checkout Fields
 Plugin URI: http://websector.com.au
-Description: Adds textbox & checkbox fields to woo commerce
+Description: Adds textbox, checkbox & select fields to woo commerce
 Author: WSR
 Version: 1
 Author URI: http://websector.com.au

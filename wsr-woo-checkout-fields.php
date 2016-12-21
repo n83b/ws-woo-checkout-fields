@@ -46,6 +46,8 @@ class WSR_woo_checkout_fields{
 		add_action('woocommerce_checkout_process', array($this, 'wsr_custom_checkout_field_process'));
 		//update order meta
 		add_action('woocommerce_checkout_update_order_meta', array($this, 'wsr_custom_checkout_field_update_order_meta'));
+		//update user meta
+		add_action('woocommerce_checkout_update_user_meta', array($this, 'wsr_custom_checkout_field_update_user_meta'));
 		//add fields to email
 		add_filter('woocommerce_email_order_meta_keys', array($this, 'wsr_custom_order_meta_keys'));
 	}
@@ -81,6 +83,7 @@ class WSR_woo_checkout_fields{
 
 	}
 
+	//remove these if not required fields
 	function wsr_custom_checkout_field_process() {
 	    
 	    if ($this->textboxKey){
@@ -111,6 +114,21 @@ class WSR_woo_checkout_fields{
     	if ($this->selectKey){
     		if ($_POST['wsr_order_select']) update_post_meta( $order_id, $this->selectKey, esc_attr($_POST['wsr_order_select']));
     	}
+	}
+
+	//Saves the field to the user meta 
+	function wsr_custom_checkout_field_update_user_meta( $user_id) {
+		if ($this->textboxKey){
+			if ($user_id && $_POST['wsr_order_textbox']) update_user_meta( $user_id, 'wsr_meta_textbox', esc_attr($_POST['wsr_order_textbox']));
+	    }
+
+	    if ($this->checkboxKey){
+			if ($user_id && $_POST['wsr_order_checkbox']) update_user_meta( $user_id, 'wsr_meta_checkbox', esc_attr($_POST['wsr_order_checkbox']));
+	    }
+
+	    if ($this->selectKey){
+			if ($user_id && $_POST['wsr_order_select']) update_user_meta( $user_id, 'wsr_meta_selectbox', esc_attr($_POST['wsr_order_select']));
+	    }
 	}
 
 	function wsr_custom_order_meta_keys( $keys ) {

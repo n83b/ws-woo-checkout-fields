@@ -111,6 +111,15 @@ class WSR_woo_checkout_fields{
     	if ($this->selectKey){
     		if ($_POST['wsr_order_select']) update_post_meta( $order_id, $this->selectKey, esc_attr($_POST['wsr_order_select']));
     	}
+
+    	//if you want to save to useer meta:
+    	if ($this->textboxKey){
+    		if ($_POST['wsr_order_textbox']){
+	    		$theorder = new WC_Order( $order_id );
+	    		$customer_id = $theorder->get_user_id();
+	    		update_user_meta( $customer_id, 'custom_field', esc_attr($_POST['wsr_order_textbox']) );
+	    	}
+    	}
 	}
 
 	function wsr_custom_order_meta_keys( $keys ) {

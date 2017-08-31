@@ -57,6 +57,7 @@ class WSR_woo_checkout_fields{
 				'label'     	=> $this->textboxLabel,
 		   		'required'  	=> true,
 		    	'class'     	=> array('form-row-wide'),
+		    	//'default'		=> get_user_meta( get_current_user_id(), 'preferred_contact_method', true ), 
 			), $fields->get_value( 'wsr_order_textbox' ));
 		}	
 
@@ -66,6 +67,7 @@ class WSR_woo_checkout_fields{
 				'label'     	=> $this->checkboxLabel,
 		   		'required'  	=> true,
 		    	'class'     	=> array('input-checkbox'),
+		    	//'default'		=> get_user_meta( get_current_user_id(), 'preferred_contact_method', true ), 
 			), $fields->get_value( 'wsr_order_checkbox' ));
 		}	
 
@@ -76,6 +78,7 @@ class WSR_woo_checkout_fields{
 			  	'required'   	=> true,
 			  	'class'      	=> array('form-row-wide'),
 			  	'options' 		=> $this->selectOptions,
+			  	//'default'		=> get_user_meta( get_current_user_id(), 'preferred_contact_method', true ), 
 			), $fields->get_value( 'wsr_order_select' ));
 		}
 

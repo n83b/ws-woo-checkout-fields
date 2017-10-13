@@ -8,6 +8,9 @@ Description: Adds textbox, checkbox & select fields to woo commerce
 Author: WSR
 Version: 1
 Author URI: http://websector.com.au
+
+Woo checkout field documentation 
+https://docs.woocommerce.com/document/tutorial-customising-checkout-fields-using-actions-and-filters/
 */
 class WSR_woo_checkout_fields{
 	var $settings;
@@ -41,7 +44,9 @@ class WSR_woo_checkout_fields{
 		);
 
 		//add checkbox field
-		add_filter( 'woocommerce_after_checkout_billing_form' , array($this, 'wsr_custom_checkout_fields' ));
+		add_filter( 'woocommerce_checkout_fields' , array($this, 'wsr_custom_checkout_fields'), 20 );
+		//Change order or make required default checkout fields
+		add_filter( 'woocommerce_checkout_fields' , array($this, 'wsr_default_checkout_fields_order'), 20 );
 		//process the checkout
 		add_action('woocommerce_checkout_process', array($this, 'wsr_custom_checkout_field_process'));
 		//update order meta
@@ -52,84 +57,126 @@ class WSR_woo_checkout_fields{
 		add_filter('woocommerce_email_order_meta_keys', array($this, 'wsr_custom_order_meta_keys'));
 	}
 
+
+
+	/*******************************************
+	 * Add new checkout fields
+	 *
+	 */
 	function wsr_custom_checkout_fields( $fields ) {
 		if ($this->textboxKey){
-			woocommerce_form_field( 'wsr_order_textbox', array(
-				'type'			=> 'text',
-				'label'     	=> $this->textboxLabel,
-		   		'required'  	=> true,
-		    	'class'     	=> array('form-row-wide'),
-			), $fields->get_value( 'wsr_order_textbox' ));
+			$fields['billing']['wsr_billing_textbox'] = array(
+	        	'label'     	=> $this->textboxLabel
+			    'placeholder'   => $this->textboxLabel
+			    'required'  	=> true,
+			    'priority'		=> 120,
+			    'class'     	=> array('form-row-wide'),
+			    'default' 		=> $fields->get_value( 'wsr_billing_textbox' )
+			);
 		}	
 
 		if ($this->checkboxKey){
-			woocommerce_form_field( 'wsr_order_checkbox', array(
-				'type'			=> 'checkbox',
-				'label'     	=> $this->checkboxLabel,
-		   		'required'  	=> true,
-		    	'class'     	=> array('input-checkbox'),
-			), $fields->get_value( 'wsr_order_checkbox' ));
+			$fields['billing']['wsr_billing_checkbox'] = array(
+				'type' 		=> 'checkbox',
+	        	'label'     => $this->checkboxLabel,
+			    'required'  => true,
+			    'priority'	=> 130,
+			    'class'     => array('input-checkbox'),
+			    'default'	=> $fields->get_value( 'wsr_billing_checkbox' ),
+			);
 		}	
 
 		if ($this->selectKey){
-			woocommerce_form_field( 'wsr_order_select', array(
-				'type' 			=> 'select',
-			 	'label'      	=> $this->selectLabel,
-			  	'required'   	=> true,
-			  	'class'      	=> array('form-row-wide'),
-			  	'options' 		=> $this->selectOptions,
-			), $fields->get_value( 'wsr_order_select' ));
+			$fields['billing']['wsr_billing_select'] = array(
+				'type' 		=> 'select',
+	        	'label'     => $this->selectLabel,
+			    'required'  => true,
+			    'priority'	=> 140,
+			    'class'     => array('form-row-wide'),
+			    'options' 	=> $this->selectOptions,
+			    'default'	=> $fields->get_value( 'wsr_billing_select' ),
+			);
 		}
 
 	}
 
-	//remove these if not required fields
+
+
+	/*******************************************
+	 * Change the order of the checkout fields with priority
+	 * Make fields required or not. 
+	 *
+	 */
+	function wsr_default_checkout_fields_order(){
+		//$fields['billing']['billing_phone']['priority'] = 130;
+		//$fields['billing']['billing_phone']['required'] = false;
+	}
+
+
+
+	/*******************************************
+	 * Error checking on fields after submission
+	 *
+	 */
 	function wsr_custom_checkout_field_process() {
 	    
 	    if ($this->textboxKey){
-		    if (!$_POST['wsr_order_textbox'])
+		    if (!$_POST['wsr_billing_textbox'])
 		        wc_add_notice( __( 'Please enter required fields' ), 'error' );
 		}
 
 	    if ($this->checkboxKey){
-		    if (!$_POST['wsr_order_checkbox'])
+		    if (!$_POST['wsr_billing_checkbox'])
 		        wc_add_notice( __( 'Please check required fields' ), 'error' );
 		}
 
 		if ($this->selectKey){
-		    if (!$_POST['wsr_order_select'])
+		    if (!$_POST['wsr_billing_select'])
 		        wc_add_notice( __( 'Please select required fields' ), 'error' );
 		}
 	}
 
+
+
+	/*******************************************
+	 * Update checkout field post meta on submit
+	 *
+	 */
 	function wsr_custom_checkout_field_update_order_meta( $order_id ) {
 		if ($this->textboxKey){
-    		if ($_POST['wsr_order_textbox']) update_post_meta( $order_id, $this->textboxKey, esc_attr($_POST['wsr_order_textbox']));
+    		if ($_POST['wsr_billing_textbox']) update_post_meta( $order_id, $this->textboxKey, esc_attr($_POST['wsr_billing_textbox']));
     	}
 
 		if ($this->checkboxKey){
-    		if ($_POST['wsr_order_checkbox']) update_post_meta( $order_id, $this->checkboxKey, esc_attr($_POST['wsr_order_checkbox']));
+    		if ($_POST['wsr_billing_checkbox']) update_post_meta( $order_id, $this->checkboxKey, esc_attr($_POST['wsr_billing_checkbox']));
     	}
 
     	if ($this->selectKey){
-    		if ($_POST['wsr_order_select']) update_post_meta( $order_id, $this->selectKey, esc_attr($_POST['wsr_order_select']));
+    		if ($_POST['wsr_billing_select']) update_post_meta( $order_id, $this->selectKey, esc_attr($_POST['wsr_billing_select']));
     	}
 	}
 
-	//Saves the field to the user meta 
+
+
+	/*******************************************
+	 * Saves the field to the user meta if required
+	 *
+	 */
 	function wsr_custom_checkout_field_update_user_meta( $user_id) {
 		if ($this->textboxKey){
-			if ($user_id && $_POST['wsr_order_textbox']) update_user_meta( $user_id, 'wsr_meta_textbox', esc_attr($_POST['wsr_order_textbox']));
+			if ($user_id && $_POST['wsr_billing_textbox']) update_user_meta( $user_id, 'wsr_meta_textbox', esc_attr($_POST['wsr_billing_textbox']));
 	    }
 
 	    if ($this->checkboxKey){
-			if ($user_id && $_POST['wsr_order_checkbox']) update_user_meta( $user_id, 'wsr_meta_checkbox', esc_attr($_POST['wsr_order_checkbox']));
+			if ($user_id && $_POST['wsr_billing_checkbox']) update_user_meta( $user_id, 'wsr_meta_checkbox', esc_attr($_POST['wsr_billing_checkbox']));
 	    }
 
 	    if ($this->selectKey){
-			if ($user_id && $_POST['wsr_order_select']) update_user_meta( $user_id, 'wsr_meta_selectbox', esc_attr($_POST['wsr_order_select']));
+			if ($user_id && $_POST['wsr_billing_select']) update_user_meta( $user_id, 'wsr_meta_selectbox', esc_attr($_POST['wsr_billing_select']));
 	    }
 	}
+
+
 
 	function wsr_custom_order_meta_keys( $keys ) {
 	     if ($this->textboxKey){

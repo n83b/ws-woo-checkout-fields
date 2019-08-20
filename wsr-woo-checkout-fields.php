@@ -19,7 +19,7 @@ class WSR_woo_checkout_fields{
 	Simply Edit these variables.  Empty key string removes field */	
 
 	//textbox
-	var $wsr_textbox = 'Text box key';
+	var $wsr_textbox = 'wsr_textbox';
 	var $wsr_textbox_label = 'Enter text here';
 	
 	//Checkbox
@@ -55,6 +55,8 @@ class WSR_woo_checkout_fields{
 		add_action('woocommerce_checkout_update_user_meta', array($this, 'wsr_custom_checkout_field_update_user_meta'));
 		//add fields to email
 		add_filter('woocommerce_email_order_meta_keys', array($this, 'wsr_custom_order_meta_keys'));
+		//oputput meta on order page
+		add_action( 'woocommerce_admin_order_data_after_billing_address', array($this, 'wsr_order_admin_output_meta'));
 	}
 
 
@@ -70,7 +72,7 @@ class WSR_woo_checkout_fields{
 			    'required'  	=> true,
 			    'priority'		=> 120,
 			    'class'     	=> array('form-row-wide'),
-			    'default' 		=> $fields->get_value( 'wsr_textbox' )
+			    //'default' 		=> $fields->get_value( 'wsr_textbox' )
 			);
 		}	
 
@@ -203,6 +205,18 @@ class WSR_woo_checkout_fields{
 
 	     return $keys;
 	}	
+	
+	
+	
+	/*******************************************
+	 * Ooutput field in order admin edit page. Just texbox only at this stage
+	 *
+	 */
+	function wsr_order_admin_output_meta( $order ){
+   		global $post;
+		$custom_meta = get_post_meta( $post->ID, $this->wsr_textbox, true );
+	    	echo '<p><strong>Custom field:</strong><br />' . $custom_meta . '</p>';
+	}
 
 }
 

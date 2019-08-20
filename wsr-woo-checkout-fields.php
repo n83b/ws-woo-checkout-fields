@@ -65,8 +65,8 @@ class WSR_woo_checkout_fields{
 	function wsr_custom_checkout_fields( $fields ) {
 		if ($this->wsr_textbox){
 			$fields['billing']['wsr_textbox'] = array(
-	        	'label'     	=> $this->wsr_textbox_label
-			    'placeholder'   => $this->wsr_textbox_label
+	        	    'label'    	        => $this->wsr_textbox_label,
+			    'placeholder'       => $this->wsr_textbox_label,
 			    'required'  	=> true,
 			    'priority'		=> 120,
 			    'class'     	=> array('form-row-wide'),
